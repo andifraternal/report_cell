@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:report_cell/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:url_launcher/url_launcher.dart';
-
-// final Uri _url = Uri.parse('https://flutter.dev');
 
 String username = '';
 String nama = '';
@@ -32,7 +29,6 @@ class _HomeState extends State<Home> {
     });
   }
 
-
   void Hapuslogin() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     await localStorage.clear();
@@ -50,14 +46,17 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.cloud_sync),
-        // title : Text(username),
         title: new InkWell(
           child: new Text('$nama (logout)'),
           onTap: () => Hapuslogin(),
         ),
+        backgroundColor: Colors.red,
         centerTitle: true,
-        actions: <Widget>[
-          Icon(Icons.cloud_done),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(13.0),
+            child: Icon(Icons.cloud_done),
+          ),
         ],
       ),
 

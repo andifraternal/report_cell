@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:lottie/lottie.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'home.dart';
@@ -54,10 +53,6 @@ class _loginAppState extends State<LoginApp>{
         if(data['status'] == 'fail'){
           sweatAlert(context);
         }else{
-          // print();
-          // var hasilData = [
-          //   'username'  = data['data']['UNAME']
-          // ];
           // simpan session
           saveSession(data['data']['UNAME'], data['data']['NAMA']);
           Navigator.pushAndRemoveUntil(
