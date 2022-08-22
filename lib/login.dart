@@ -20,7 +20,6 @@ class _loginAppState extends State<LoginApp>{
   var username = TextEditingController();
   var password = TextEditingController();
 
-
   void sweatAlert(BuildContext context) {
     Alert(
       context: context,
@@ -50,17 +49,23 @@ class _loginAppState extends State<LoginApp>{
       if(response.statusCode == 200){
         final data = jsonDecode(response.body);
 
-        if(data['status'] == 'fail'){
+        if(data['status'] == ''){
           sweatAlert(context);
         }else{
           // simpan session
-          saveSession(data['data']['UNAME'], data['data']['NAMA']);
-          Navigator.pushAndRemoveUntil(
+          saveSession(data['data']['UNAME'], data['data']['NAMA'], data['data']['VIEW_ALL'], data['data']['NIK']);
+          // tampilSession();
+          SharedPreferences pref = await SharedPreferences.getInstance();
+          var getUser = pref.getString("username");
+          var getNama = pref.getString("nama");
+          var getViewAll = pref.getString("viewAll");
+          var getNik = pref.getString("nik");
+          var islogin = pref.getBool("is_login");
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (BuildContext context) => Home(),
             ),
-            (route) => false,
           );
         }
       }
@@ -70,17 +75,24 @@ class _loginAppState extends State<LoginApp>{
   }
 
   // create session
-  saveSession(String uname, String nama) async {
+  saveSession(String uname, String nama, String viewAll, String nik) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.setString("username", uname);
     await pref.setString("nama", nama);
+    await pref.setString("viewAll", viewAll);
+    await pref.setString("nik", nik);
     await pref.setBool("is_login", true);
   }
+
 
   void checkLogin() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var getUser = pref.getString("username");
+    var getNama = pref.getString("nama");
+    var getViewAll = pref.getString("viewAll");
+    var getNik = pref.getString("nik");
     var islogin = pref.getBool("is_login");
+    // tampilSession();
     if (islogin != null && islogin) {
       Navigator.pushAndRemoveUntil(
         context,
@@ -90,7 +102,7 @@ class _loginAppState extends State<LoginApp>{
         (route) => false,
       );
     }
-    print(getUser);
+    print(getNik);
   }
 
 
