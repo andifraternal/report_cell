@@ -55,8 +55,11 @@ class _loginAppState extends State<LoginApp>{
           sweatAlert(context);
         }else{
           // print();
+          // var hasilData = [
+          //   'username'  = data['data']['UNAME']
+          // ];
           // simpan session
-          saveSession(data['data']['UNAME']);
+          saveSession(data['data']['UNAME'], data['data']['NAMA']);
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -72,9 +75,10 @@ class _loginAppState extends State<LoginApp>{
   }
 
   // create session
-  saveSession(String username) async {
+  saveSession(String uname, String nama) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setString("username", username);
+    await pref.setString("username", uname);
+    await pref.setString("nama", nama);
     await pref.setBool("is_login", true);
   }
 
@@ -102,11 +106,7 @@ class _loginAppState extends State<LoginApp>{
     super.initState();
   }
 
-  void Hapuslogin() async{
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    // localStorage.setBool('is_login', false);
-    await localStorage.clear();
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -212,20 +212,20 @@ class _loginAppState extends State<LoginApp>{
                       },
                     ),
 
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      child: const Text(
-                        "hapus login",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onPressed: () {
-                        Hapuslogin();
-                      },
-                    )
+                    // ElevatedButton(
+                    //   style: ElevatedButton.styleFrom(
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(15),
+                    //     ),
+                    //   ),
+                    //   child: const Text(
+                    //     "hapus login",
+                    //     style: TextStyle(color: Colors.white),
+                    //   ),
+                    //   onPressed: () {
+                    //     Hapuslogin();
+                    //   },
+                    // )
                     
                   ],
                 ),
