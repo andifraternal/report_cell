@@ -53,20 +53,27 @@ class _loginAppState extends State<LoginApp>{
           sweatAlert(context);
         }else{
           // simpan session
-          saveSession(data['data']['UNAME'], data['data']['NAMA'], data['data']['VIEW_ALL'], data['data']['NIK']);
-          // tampilSession();
-          SharedPreferences pref = await SharedPreferences.getInstance();
-          var getUser = pref.getString("username");
-          var getNama = pref.getString("nama");
-          var getViewAll = pref.getString("viewAll");
-          var getNik = pref.getString("nik");
-          var islogin = pref.getBool("is_login");
-          Navigator.push(
+          final  pref = await SharedPreferences.getInstance();
+          await pref.setString("sessionUsername", data['data']['UNAME']);
+          await pref.setString("sessionNama", data['data']['NAMA']);
+          await pref.setString("sessionViewAll", data['data']['VIEW_ALL']);
+          await pref.setString("sessionNik", data['data']['NIK']);
+          await pref.setBool("sessionLogin", true);
+
+          // final String? sessionUsername = pref.getString('sessionUsername');
+          // final String? sessionNama = pref.getString('sessionNama');
+          // final String? sessionViewAll = pref.getString('sessionViewAll');
+          // final String? sessionNik = pref.getString('sessionNik');
+          // final bool? sessionLogin = pref.getBool('sessionLogin');
+
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
               builder: (BuildContext context) => Home(),
             ),
+            (route) => false,
           );
+          // print(hoha);
         }
       }
     } catch (e) {
@@ -74,24 +81,13 @@ class _loginAppState extends State<LoginApp>{
     }
   }
 
-  // create session
-  saveSession(String uname, String nama, String viewAll, String nik) async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setString("username", uname);
-    await pref.setString("nama", nama);
-    await pref.setString("viewAll", viewAll);
-    await pref.setString("nik", nik);
-    await pref.setBool("is_login", true);
-  }
-
-
   void checkLogin() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    var getUser = pref.getString("username");
-    var getNama = pref.getString("nama");
-    var getViewAll = pref.getString("viewAll");
-    var getNik = pref.getString("nik");
-    var islogin = pref.getBool("is_login");
+    var getUser = pref.getString("sessionUsername");
+    var getNama = pref.getString("sessionNama");
+    var getViewAll = pref.getString("sessionViewAll");
+    var getNik = pref.getString("sessionNik");
+    var islogin = pref.getBool("sessionLogin");
     // tampilSession();
     if (islogin != null && islogin) {
       Navigator.pushAndRemoveUntil(
