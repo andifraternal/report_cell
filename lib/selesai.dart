@@ -38,18 +38,18 @@ class _SelesaiState extends State<Selesai> {
   void initState() {
     super.initState();
     setState(() {
-      _GetData();
-      GetReportDoneA();
-      GetReportDoneB();
-      GetReportDoneC();
-      GetReportDoneD();
-      GetReportDoneE();
-      GetReportDoneH();
+      _getData();
+      getReportDoneA();
+      getReportDoneB();
+      getReportDoneC();
+      getReportDoneD();
+      getReportDoneE();
+      getReportDoneH();
     });
     
   }
 
-  void _GetData() async {
+  void _getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
       username = (pref.getString('sessionUsername')??'');
@@ -60,13 +60,15 @@ class _SelesaiState extends State<Selesai> {
   }
 
 
-  void Hapuslogin() async{
+  void hapuslogin() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     await localStorage.clear();
+    if (!mounted) return;
+    // runApp(const MaterialApp(home: LoginApp()));
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => LoginApp(),
+        builder: (BuildContext context) => const LoginApp(),
       ),
       (route) => false,
     );  
@@ -76,7 +78,7 @@ class _SelesaiState extends State<Selesai> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => Selesai(),
+        builder: (BuildContext context) => const Selesai(),
       ),
       (route) => false,
     );
@@ -86,7 +88,7 @@ class _SelesaiState extends State<Selesai> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => Home(),
+        builder: (BuildContext context) => const Home(),
       ),
       (route) => false,
     );
@@ -96,27 +98,27 @@ class _SelesaiState extends State<Selesai> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => Progress(),
+        builder: (BuildContext context) => const Progress(),
       ),
       (route) => false,
     );
   }
 
   tanggalSekarang(){
-    var now = new DateTime.now();
-    var formatter = new DateFormat('yyyyMMdd');
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyyMMdd');
     String formattedDate = formatter.format(now);
     return formattedDate;
   }
 
-  Future GetReportDoneA() async{
+  Future getReportDoneA() async{
     // print(tanggalSekarang());
     var sekarang = tanggalSekarang();
     // var sekarang = '20220822';
     // print(sekarang);
     try {
       final response = await http.get(Uri.parse(
-        "http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal="+sekarang+"&gedung=a"
+        'http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal=$sekarang&gedung=a'
       ));
 
       if(response.statusCode == 200){
@@ -124,7 +126,7 @@ class _SelesaiState extends State<Selesai> {
 
         setState(() {
           getDataReportDoneA = data;
-          print(getDataReportDoneA.length);
+          // print(getDataReportDoneA.length);
         });
       }
 
@@ -134,11 +136,11 @@ class _SelesaiState extends State<Selesai> {
     // print(username);
   }
 
-  Future GetReportDoneB() async{
+  Future getReportDoneB() async{
     var sekarang = tanggalSekarang();
     try {
       final response = await http.get(Uri.parse(
-        "http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal="+sekarang+"&gedung=b"
+        'http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal=$sekarang&gedung=b'
       ));
 
       if(response.statusCode == 200){
@@ -146,7 +148,7 @@ class _SelesaiState extends State<Selesai> {
 
         setState(() {
           getDataReportDoneB = data;
-          print(getDataReportDoneB.length);
+          // print(getDataReportDoneB.length);
         });
       }
 
@@ -156,11 +158,11 @@ class _SelesaiState extends State<Selesai> {
     // print(username);
   }
 
-  Future GetReportDoneC() async{
+  Future getReportDoneC() async{
     var sekarang = tanggalSekarang();
     try {
       final response = await http.get(Uri.parse(
-        "http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal="+sekarang+"&gedung=c"
+        'http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal=$sekarang&gedung=c'
       ));
 
       if(response.statusCode == 200){
@@ -168,7 +170,7 @@ class _SelesaiState extends State<Selesai> {
 
         setState(() {
           getDataReportDoneC = data;
-          print(getDataReportDoneC.length);
+          // print(getDataReportDoneC.length);
         });
       }
 
@@ -178,11 +180,11 @@ class _SelesaiState extends State<Selesai> {
     // print(username);
   }
 
-  Future GetReportDoneD() async{
+  Future getReportDoneD() async{
     var sekarang = tanggalSekarang();
     try {
       final response = await http.get(Uri.parse(
-        "http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal="+sekarang+"&gedung=d"
+        'http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal=$sekarang&gedung=d'
       ));
 
       if(response.statusCode == 200){
@@ -190,7 +192,7 @@ class _SelesaiState extends State<Selesai> {
 
         setState(() {
           getDataReportDoneD = data;
-          print(getDataReportDoneD.length);
+          // print(getDataReportDoneD.length);
         });
       }
 
@@ -200,11 +202,11 @@ class _SelesaiState extends State<Selesai> {
     // print(username);
   }
 
-  Future GetReportDoneE() async{
+  Future getReportDoneE() async{
     var sekarang = tanggalSekarang();
     try {
       final response = await http.get(Uri.parse(
-        "http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal="+sekarang+"&gedung=e"
+        'http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal=$sekarang&gedung=e'
       ));
 
       if(response.statusCode == 200){
@@ -212,7 +214,7 @@ class _SelesaiState extends State<Selesai> {
 
         setState(() {
           getDataReportDoneE = data;
-          print(getDataReportDoneE.length);
+          // print(getDataReportDoneE.length);
         });
       }
 
@@ -222,11 +224,11 @@ class _SelesaiState extends State<Selesai> {
     // print(username);
   }
 
-  Future GetReportDoneH() async{
+  Future getReportDoneH() async{
     var sekarang = tanggalSekarang();
     try {
       final response = await http.get(Uri.parse(
-        "http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal="+sekarang+"&gedung=h"
+        'http://10.10.40.40/report-cell-api/index.php/reportDone/index_get?tanggal=$sekarang&gedung=h'
       ));
 
       if(response.statusCode == 200){
@@ -234,7 +236,7 @@ class _SelesaiState extends State<Selesai> {
 
         setState(() {
           getDataReportDoneH = data;
-          print(getDataReportDoneH.length);
+          // print(getDataReportDoneH.length);
         });
       }
 
@@ -251,14 +253,14 @@ class _SelesaiState extends State<Selesai> {
       backgroundColor: Colors.green,
       appBar: AppBar(
         leading: GestureDetector(
-          child: Icon(Icons.open_in_browser),
+          child: const Icon(Icons.open_in_browser),
           onTap: () => reportOpen(),
         ),
         title:  Transform(
           transform:  Matrix4.translationValues(-60.0, 0.0, 0.0),
           child: Text(
             nama,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
             ),
           ),
@@ -267,25 +269,25 @@ class _SelesaiState extends State<Selesai> {
         centerTitle: true,
         actions: [
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
+            child: const Padding(
+              padding: EdgeInsets.all(18.0),
               child: Icon(Icons.cloud_sync),
             ),
             onTap: () => reportProgress(),
           ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
+            child: const Padding(
+              padding: EdgeInsets.all(18.0),
               child: Icon(Icons.cloud_done),
             ),
             onTap: () => reportDone(),
           ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
+            child: const Padding(
+              padding: EdgeInsets.all(18.0),
               child: Icon(Icons.logout),
             ),
-            onTap: () => Hapuslogin(),
+            onTap: () => hapuslogin(),
           )
         ],
       ),
@@ -311,7 +313,7 @@ class _SelesaiState extends State<Selesai> {
                           children: [
                             Text(
                               '(${getDataReportDoneA[index]['no_urut']}) ${getDataReportDoneA[index]['cell']} - ${getDataReportDoneA[index]['bagian']} - ${getDataReportDoneA[index]['detail']} (${getDataReportDoneA[index]['NAMA']})',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
                             ),
                             const SizedBox(height: 1),
                           ],
@@ -341,7 +343,7 @@ class _SelesaiState extends State<Selesai> {
                           children: [
                             Text(
                               '(${getDataReportDoneB[index]['no_urut']}) ${getDataReportDoneB[index]['cell']} - ${getDataReportDoneB[index]['bagian']} - ${getDataReportDoneB[index]['detail']} (${getDataReportDoneB[index]['NAMA']})',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
                             ),
                             const SizedBox(height: 1),
                           ],
@@ -371,7 +373,7 @@ class _SelesaiState extends State<Selesai> {
                           children: [
                             Text(
                               '(${getDataReportDoneC[index]['no_urut']}) ${getDataReportDoneC[index]['cell']} - ${getDataReportDoneC[index]['bagian']} - ${getDataReportDoneC[index]['detail']} (${getDataReportDoneC[index]['NAMA']})',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
                             ),
                             const SizedBox(height: 1),
                           ],
@@ -401,7 +403,7 @@ class _SelesaiState extends State<Selesai> {
                           children: [
                             Text(
                               '(${getDataReportDoneD[index]['no_urut']}) ${getDataReportDoneD[index]['cell']} - ${getDataReportDoneD[index]['bagian']} - ${getDataReportDoneD[index]['detail']} (${getDataReportDoneD[index]['NAMA']})',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
                             ),
                             const SizedBox(height: 1),
                           ],
@@ -431,7 +433,7 @@ class _SelesaiState extends State<Selesai> {
                           children: [
                             Text(
                               '(${getDataReportDoneE[index]['no_urut']}) ${getDataReportDoneE[index]['cell']} - ${getDataReportDoneE[index]['bagian']} - ${getDataReportDoneE[index]['detail']} (${getDataReportDoneE[index]['NAMA']})',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
                             ),
                             const SizedBox(height: 1),
                           ],
@@ -461,7 +463,7 @@ class _SelesaiState extends State<Selesai> {
                           children: [
                             Text(
                               '(${getDataReportDoneH[index]['no_urut']}) ${getDataReportDoneH[index]['cell']} - ${getDataReportDoneH[index]['bagian']} - ${getDataReportDoneH[index]['detail']} (${getDataReportDoneH[index]['NAMA']})',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,  decoration: TextDecoration.lineThrough),
                             ),
                             const SizedBox(height: 1),
                           ],

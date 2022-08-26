@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-// import 'package:report_cell/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'selesai.dart';
 import 'login.dart';
 import 'progress.dart';
-// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 
 String username = '';
@@ -23,6 +21,7 @@ class Home extends StatefulWidget {
 
 
 class _HomeState extends State<Home> {
+  // final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   List getDataReportOpenA = [];
   List getDataReportOpenB = [];
@@ -36,18 +35,18 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     setState(() {
-      _GetData();
-      GetReportOpenA();
-      GetReportOpenB();
-      GetReportOpenC();
-      GetReportOpenD();
-      GetReportOpenE();
-      GetReportOpenH();
+      _getData();
+      getReportOpenA();
+      getReportOpenB();
+      getReportOpenC();
+      getReportOpenD();
+      getReportOpenE();
+      getReportOpenH();
     });
     
   }
 
-  void _GetData() async {
+  void _getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
       username = (pref.getString('sessionUsername')??'');
@@ -58,13 +57,15 @@ class _HomeState extends State<Home> {
   }
 
 
-  void Hapuslogin() async{
+  void hapusLogin() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     await localStorage.clear();
+    // runApp(const MaterialApp(home: LoginApp()));
+    if (!mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => LoginApp(),
+        builder: (BuildContext context) => const LoginApp(),
       ),
       (route) => false,
     );  
@@ -74,7 +75,7 @@ class _HomeState extends State<Home> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => Selesai(),
+        builder: (BuildContext context) => const Selesai(),
       ),
       (route) => false,
     );
@@ -84,7 +85,7 @@ class _HomeState extends State<Home> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => Home(),
+        builder: (BuildContext context) => const Home(),
       ),
       (route) => false,
     );
@@ -94,13 +95,85 @@ class _HomeState extends State<Home> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => Progress(),
+        builder: (BuildContext context) => const Progress(),
       ),
       (route) => false,
     );
   }
 
-  Future GetReportOpenA() async{
+
+  void pindahKeProgress(String idReport) async{
+    // print(idReport);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          //show dialog to confirm delete data
+          return 
+          AlertDialog(
+            content: const Text('Pindahkan report ke in progress?'),
+            actions: <Widget>[
+              ElevatedButton(
+                child: const Icon(Icons.cancel),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              ElevatedButton(
+                child: const Icon(Icons.check_circle),
+                onPressed: () => pindahProses(idReport),
+              ),
+            ],
+          );
+        },
+      );
+  }
+
+
+  tanggalSekarang(){
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
+    String formattedDate = formatter.format(now);
+    return formattedDate;
+  }
+
+  Future pindahProses(context) async {
+        try {
+            var updateData =  await http.put(
+              Uri.parse("http://10.10.40.40/report-cell-api/index.php/reportOpen/index_put"),
+              body: {
+                "id"          : context,
+                'updated_at'  : tanggalSekarang()
+              },
+            ).then((value) {
+                var data = jsonDecode(value.body);
+                return data['error'];
+            });
+            if(updateData == false){
+                var insertDataLog =  await http.post(
+                  Uri.parse("http://10.10.40.40/report-cell-api/index.php/reportOpen/index_post"),
+                  body: {
+                    "id"                : context,
+                    "nik"               : nik,
+                    "status"            : 'PROGRESS',
+                    "masalahSebenarnya" : '',
+                    "created_at"        : tanggalSekarang()
+                  },
+                ).then((value) {
+                    var data = jsonDecode(value.body);
+                    return data['error'];
+                });
+                if(insertDataLog == false){
+                  return reportProgress();
+                }else{
+                  return Navigator.of(context).pop();
+                }
+            }
+        } catch (e) {
+          print(e);
+        }
+      }
+
+
+
+  Future getReportOpenA() async{
     try {
       final response = await http.get(Uri.parse(
         "http://10.10.40.40/report-cell-api/index.php/reportOpen/index_get?gedung=a"
@@ -121,7 +194,7 @@ class _HomeState extends State<Home> {
     // print(username);
   }
 
-  Future GetReportOpenB() async{
+  Future getReportOpenB() async{
     
     try {
       final response = await http.get(Uri.parse(
@@ -143,7 +216,7 @@ class _HomeState extends State<Home> {
     // print(username);
   }
 
-  Future GetReportOpenC() async{
+  Future getReportOpenC() async{
     
     try {
       final response = await http.get(Uri.parse(
@@ -165,7 +238,7 @@ class _HomeState extends State<Home> {
     // print(username);
   }
 
-  Future GetReportOpenD() async{
+  Future getReportOpenD() async{
     
     try {
       final response = await http.get(Uri.parse(
@@ -187,7 +260,7 @@ class _HomeState extends State<Home> {
     // print(username);
   }
 
-  Future GetReportOpenE() async{
+  Future getReportOpenE() async{
     
     try {
       final response = await http.get(Uri.parse(
@@ -209,7 +282,7 @@ class _HomeState extends State<Home> {
     // print(username);
   }
 
-  Future GetReportOpenH() async{
+  Future getReportOpenH() async{
     
     try {
       final response = await http.get(Uri.parse(
@@ -238,14 +311,14 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.red,
       appBar: AppBar(
         leading: GestureDetector(
-          child: Icon(Icons.open_in_browser),
+          child: const Icon(Icons.open_in_browser),
           onTap: () => reportOpen(),
         ),
         title:  Transform(
           transform:  Matrix4.translationValues(-60.0, 0.0, 0.0),
           child: Text(
             nama,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
             ),
           ),
@@ -254,25 +327,25 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         actions: [
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
+            child: const Padding(
+              padding: EdgeInsets.all(18.0),
               child: Icon(Icons.cloud_sync),
             ),
             onTap: () => reportProgress(),
           ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
+            child: const Padding(
+              padding: EdgeInsets.all(18.0),
               child: Icon(Icons.cloud_done),
             ),
             onTap: () => reportDone(),
           ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
+            child: const Padding(
+              padding: EdgeInsets.all(18.0),
               child: Icon(Icons.logout),
             ),
-            onTap: () => Hapuslogin(),
+            onTap: () => hapusLogin(),
           )
         ],
       ),
@@ -290,21 +363,24 @@ class _HomeState extends State<Home> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Card(
+              return GestureDetector(
+                onTap: () => pindahKeProgress(getDataReportOpenA[index]['id']),
+                child: Card(
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${getDataReportOpenA[index]['cell']} - ${getDataReportOpenA[index]['bagian']} - ${getDataReportOpenA[index]['detail']} ',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,),
+                              '${getDataReportOpenA[index]['cell']} - ${getDataReportOpenA[index]['bagian']} - ${getDataReportOpenA[index]['detail']}',
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,),
                             ),
                             const SizedBox(height: 1),
                           ],
                         ),
                       ),
-                    );
+                    ),
+              );
             },
             childCount: getDataReportOpenA.length, 
           ),
@@ -320,7 +396,9 @@ class _HomeState extends State<Home> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Card(
+              return GestureDetector(
+                onTap: () => reportProgress(),
+                child: Card(
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         child: Column(
@@ -328,13 +406,14 @@ class _HomeState extends State<Home> {
                           children: [
                             Text(
                               '${getDataReportOpenB[index]['cell']} - ${getDataReportOpenB[index]['bagian']} - ${getDataReportOpenB[index]['detail']}',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,),
                             ),
                             const SizedBox(height: 1),
                           ],
                         ),
                       ),
-                    );
+                    ),
+              );
             },
             childCount: getDataReportOpenB.length, 
           ),
@@ -350,7 +429,9 @@ class _HomeState extends State<Home> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Card(
+              return GestureDetector(
+                onTap: () => pindahKeProgress(getDataReportOpenC[index]['id']),
+                child: Card(
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         child: Column(
@@ -358,13 +439,14 @@ class _HomeState extends State<Home> {
                           children: [
                             Text(
                               '${getDataReportOpenC[index]['cell']} - ${getDataReportOpenC[index]['bagian']} - ${getDataReportOpenC[index]['detail']}',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,),
                             ),
                             const SizedBox(height: 1),
                           ],
                         ),
                       ),
-                    );
+                    ),
+              );
             },
             childCount: getDataReportOpenC.length, 
           ),
@@ -380,7 +462,9 @@ class _HomeState extends State<Home> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Card(
+              return GestureDetector(
+                onTap: () => pindahKeProgress(getDataReportOpenD[index]['id']),
+                child: Card(
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         child: Column(
@@ -388,13 +472,14 @@ class _HomeState extends State<Home> {
                           children: [
                             Text(
                               '${getDataReportOpenD[index]['cell']} - ${getDataReportOpenD[index]['bagian']} - ${getDataReportOpenD[index]['detail']}',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,),
                             ),
                             const SizedBox(height: 1),
                           ],
                         ),
                       ),
-                    );
+                    ),
+              );
             },
             childCount: getDataReportOpenD.length, 
           ),
@@ -410,21 +495,24 @@ class _HomeState extends State<Home> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Card(
+              return GestureDetector(
+                onTap: () => pindahKeProgress(getDataReportOpenE[index]['id']),
+                child: Card(
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${getDataReportOpenE[index]['cell']} - ${getDataReportOpenE[index]['bagian']} - ${getDataReportOpenE[index]['detail']} ',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,),
+                              '${getDataReportOpenE[index]['cell']} - ${getDataReportOpenE[index]['bagian']} - ${getDataReportOpenE[index]['detail']}',
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,),
                             ),
                             const SizedBox(height: 1),
                           ],
                         ),
                       ),
-                    );
+                    ),
+              );
             },
             childCount: getDataReportOpenE.length, 
           ),
@@ -440,21 +528,24 @@ class _HomeState extends State<Home> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Card(
+              return GestureDetector(
+                onTap: () => pindahKeProgress(getDataReportOpenH[index]['id']),
+                child: Card(
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${getDataReportOpenH[index]['cell']} - ${getDataReportOpenH[index]['bagian']} - ${getDataReportOpenH[index]['detail']} ',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,),
+                              '${getDataReportOpenH[index]['cell']} - ${getDataReportOpenH[index]['bagian']} - ${getDataReportOpenH[index]['detail']}',
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,),
                             ),
                             const SizedBox(height: 1),
                           ],
                         ),
                       ),
-                    );
+                    ),
+              );
             },
             childCount: getDataReportOpenH.length, 
           ),
@@ -468,5 +559,3 @@ class _HomeState extends State<Home> {
   }
 }
 
-class Tile {
-}

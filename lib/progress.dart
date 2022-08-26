@@ -32,13 +32,13 @@ class _ProgressState extends State<Progress> {
   void initState() {
     super.initState();
     setState(() {
-      _GetData();
-      GetReportProgress();
+      _getData();
+      getReportProgress();
     });
     
   }
 
-  void _GetData() async {
+  void _getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
       username = (pref.getString('sessionUsername')??'');
@@ -49,23 +49,24 @@ class _ProgressState extends State<Progress> {
   }
 
 
-  void Hapuslogin() async{
+  void hapuslogin() async{
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     await localStorage.clear();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => LoginApp(),
-      ),
-      (route) => false,
-    );  
+    runApp(const MaterialApp(home: LoginApp()));
+    // Navigator.pushAndRemoveUntil(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (BuildContext context) => const LoginApp(),
+    //   ),
+    //   (route) => false,
+    // );  
   }
 
   void reportDone() async{
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => Selesai(),
+        builder: (BuildContext context) => const Selesai(),
       ),
       (route) => false,
     );
@@ -75,7 +76,7 @@ class _ProgressState extends State<Progress> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => Home(),
+        builder: (BuildContext context) => const Home(),
       ),
       (route) => false,
     );
@@ -85,20 +86,20 @@ class _ProgressState extends State<Progress> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => Progress(),
+        builder: (BuildContext context) => const Progress(),
       ),
       (route) => false,
     );
   }
 
   tanggalSekarang(){
-    var now = new DateTime.now();
-    var formatter = new DateFormat('yyyyMMdd');
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyyMMdd');
     String formattedDate = formatter.format(now);
     return formattedDate;
   }
 
-  Future GetReportProgress() async{
+  Future getReportProgress() async{
    
     try {
       final response = await http.get(Uri.parse(
@@ -125,17 +126,17 @@ class _ProgressState extends State<Progress> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 192, 173, 0),
+      backgroundColor: const Color.fromARGB(255, 192, 173, 0),
       appBar: AppBar(
         leading: GestureDetector(
-          child: Icon(Icons.open_in_browser),
+          child: const Icon(Icons.open_in_browser),
           onTap: () => reportOpen(),
         ),
         title:  Transform(
           transform:  Matrix4.translationValues(-60.0, 0.0, 0.0),
           child: Text(
             nama,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
             ),
           ),
@@ -144,25 +145,25 @@ class _ProgressState extends State<Progress> {
         centerTitle: true,
         actions: [
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
+            child: const Padding(
+              padding: EdgeInsets.all(18.0),
               child: Icon(Icons.cloud_sync),
             ),
             onTap: () => reportProgress(),
           ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
+            child: const Padding(
+              padding: EdgeInsets.all(18.0),
               child: Icon(Icons.cloud_done),
             ),
             onTap: () => reportDone(),
           ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
+            child: const Padding(
+              padding: EdgeInsets.all(18.0),
               child: Icon(Icons.logout),
             ),
-            onTap: () => Hapuslogin(),
+            onTap: () => hapuslogin(),
           )
         ],
       ),
@@ -187,7 +188,7 @@ class _ProgressState extends State<Progress> {
                           children: [
                             Text(
                               '(${getDataReportProgress[index]['no_urut']}) ${getDataReportProgress[index]['cell']} - ${getDataReportProgress[index]['bagian']} - ${getDataReportProgress[index]['detail']} (${getDataReportProgress[index]['NAMA']})',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 9, fontWeight: FontWeight.w800,  ),
+                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,  ),
                             ),
                             const SizedBox(height: 1),
                           ],

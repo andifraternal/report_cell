@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.report_cell">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="report_cell"
+        android:label="coba_coba"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

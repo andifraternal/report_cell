@@ -8,26 +8,30 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'home.dart';
 
 
+// final GlobalKey<NavigatorState> myNavigatorKey = GlobalKey<NavigatorState>();
+
+
+
 class LoginApp extends StatefulWidget{
   const LoginApp({Key? key}) : super(key: key);
 
   @override
-  State<LoginApp> createState() => _loginAppState();
+  State<LoginApp> createState() => LoginAppState();
 }
 
-class _loginAppState extends State<LoginApp>{
+class LoginAppState extends State<LoginApp>{
   
   var username = TextEditingController();
   var password = TextEditingController();
 
-  void sweatAlert(BuildContext context) {
+  void sweatAlert() {
     Alert(
       context: context,
       type: AlertType.error,
       title: "Login Gagal",
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "OK",
             style: TextStyle(color: Colors.white, fontSize: 14),
           ),
@@ -42,7 +46,7 @@ class _loginAppState extends State<LoginApp>{
   Future _onLogin() async {
     try {
       final response = await http.get(Uri.parse(
-        "http://10.10.40.40/report-cell-api/index.php/login/index_get?username="+username.text+"&password="+password.text+""
+        "http://10.10.40.40/report-cell-api/index.php/login/index_get?username=${username.text}&password=${password.text}"
       )
       );
 
@@ -50,7 +54,7 @@ class _loginAppState extends State<LoginApp>{
         final data = jsonDecode(response.body);
 
         if(data['status'] == ''){
-          sweatAlert(context);
+          sweatAlert();
         }else{
           // simpan session
           final  pref = await SharedPreferences.getInstance();
@@ -60,19 +64,28 @@ class _loginAppState extends State<LoginApp>{
           await pref.setString("sessionNik", data['data']['NIK']);
           await pref.setBool("sessionLogin", true);
 
+          // var ok = 'ok';
+          // return  ok;
+
           // final String? sessionUsername = pref.getString('sessionUsername');
           // final String? sessionNama = pref.getString('sessionNama');
           // final String? sessionViewAll = pref.getString('sessionViewAll');
           // final String? sessionNik = pref.getString('sessionNik');
           // final bool? sessionLogin = pref.getBool('sessionLogin');
-
+          // runApp(const MaterialApp(home: Home()));
+          // if (mounted) {
+            // Navigator.of(context).push(MaterialPageRoute(builder: (context) => const Home()));
+          // }
+          if (!mounted) return;
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => Home(),
+              builder: (BuildContext context) => const Home(),
             ),
             (route) => false,
           );
+
+          // if (mounted) Utils.flushBarErrorMessage("No Internet", context);
           // print(hoha);
         }
       }
@@ -83,17 +96,19 @@ class _loginAppState extends State<LoginApp>{
 
   void checkLogin() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    var getUser = pref.getString("sessionUsername");
-    var getNama = pref.getString("sessionNama");
-    var getViewAll = pref.getString("sessionViewAll");
+    // var getUser = pref.getString("sessionUsername");
+    // var getNama = pref.getString("sessionNama");
+    // var getViewAll = pref.getString("sessionViewAll");
     var getNik = pref.getString("sessionNik");
     var islogin = pref.getBool("sessionLogin");
     // tampilSession();
     if (islogin != null && islogin) {
+      // runApp(const MaterialApp(home: Home()));
+      if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (BuildContext context) => Home(),
+          builder: (BuildContext context) => const Home(),
         ),
         (route) => false,
       );
@@ -162,7 +177,7 @@ class _loginAppState extends State<LoginApp>{
                         fontSize: 15,
                       ),),
                     const SizedBox(height: 30,),
-                    Container(
+                    SizedBox(
                       // controller: namaProvinsi,
                       width: 260,
                       height: 60,
@@ -178,7 +193,7 @@ class _loginAppState extends State<LoginApp>{
                       ),
                     ),
                     const SizedBox(height: 12,),
-                    Container(
+                    SizedBox(
                       width: 260,
                       height: 60,
                       child: TextField(
@@ -212,6 +227,9 @@ class _loginAppState extends State<LoginApp>{
                       ),
                       onPressed: () {
                         _onLogin();
+                        // if(_onLogin() == 'ok'){
+
+                        // }
                       },
                     ),
 
