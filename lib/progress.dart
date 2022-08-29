@@ -94,7 +94,7 @@ class _ProgressState extends State<Progress> {
 
   tanggalSekarang(){
     var now = DateTime.now();
-    var formatter = DateFormat('yyyyMMdd');
+    var formatter = DateFormat('yyyyMMdd HH:mm:ss');
     String formattedDate = formatter.format(now);
     return formattedDate;
   }
@@ -120,6 +120,82 @@ class _ProgressState extends State<Progress> {
     }
     // print(username);
   }
+
+  Future goOpen(context) async {
+        try {
+            var updateData =  await http.put(
+              Uri.parse("http://10.10.40.40/report-cell-api/index.php/reportProgress/index_put"),
+              body: {
+                "id"          : context,
+                'updated_at'  : tanggalSekarang()
+              },
+            ).then((value) {
+                var data = jsonDecode(value.body);
+                return data['error'];
+            });
+            if(updateData == false){
+                var insertDataLog =  await http.post(
+                  Uri.parse("http://10.10.40.40/report-cell-api/index.php/reportProgress/index_post"),
+                  body: {
+                    "id"                : context,
+                    "nik"               : nik,
+                    "status"            : 'OPEN',
+                    "masalahSebenarnya" : '',
+                    "created_at"        : tanggalSekarang()
+                  },
+                ).then((value) {
+                    var data = jsonDecode(value.body);
+                    return data['error'];
+                });
+                if(insertDataLog == false){
+                  return reportOpen();
+                }else{
+                  return Navigator.of(context).pop();
+                }
+            }
+        } catch (e) {
+          print(e);
+        }
+      }
+
+
+    Future goDone(context) async {
+        try {
+            var updateData =  await http.put(
+              Uri.parse("http://10.10.40.40/report-cell-api/index.php/reportDone/index_put"),
+              body: {
+                "id"          : context,
+                "status_report" : 'Y',
+                'updated_at'  : tanggalSekarang()
+              },
+            ).then((value) {
+                var data = jsonDecode(value.body);
+                return data['error'];
+            });
+            if(updateData == false){
+                var insertDataLog =  await http.post(
+                  Uri.parse("http://10.10.40.40/report-cell-api/index.php/reportDone/index_post"),
+                  body: {
+                    "id"                : context,
+                    "nik"               : nik,
+                    "status"            : 'DONE',
+                    "masalahSebenarnya" : '',
+                    "created_at"        : tanggalSekarang()
+                  },
+                ).then((value) {
+                    var data = jsonDecode(value.body);
+                    return data['error'];
+                });
+                if(insertDataLog == false){
+                  return reportDone();
+                }else{
+                  return Navigator.of(context).pop();
+                }
+            }
+        } catch (e) {
+          print(e);
+        }
+      }
 
   
 
@@ -183,16 +259,87 @@ class _ProgressState extends State<Progress> {
               return Card(
                       child: Container(
                         padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '(${getDataReportProgress[index]['no_urut']}) ${getDataReportProgress[index]['cell']} - ${getDataReportProgress[index]['bagian']} - ${getDataReportProgress[index]['detail']} (${getDataReportProgress[index]['NAMA']})',
-                              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,  ),
+                        child: 
+                            Column(
+                              children: [
+                                Text(
+                                  '(${getDataReportProgress[index]['no_urut']}) ${getDataReportProgress[index]['cell']} - ${getDataReportProgress[index]['bagian']} - ${getDataReportProgress[index]['detail']} (${getDataReportProgress[index]['NAMA']})',
+                                  style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 13, fontWeight: FontWeight.w800,  ),
+                                ),
+                                const SizedBox(height: 1),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            //show dialog to confirm delete data
+                                            return 
+                                            AlertDialog(
+                                              content: const Text('Pindahkan report ke Open?'),
+                                              actions: <Widget>[
+                                                ElevatedButton(
+                                                  child: const Icon(Icons.cancel),
+                                                  onPressed: () => Navigator.of(context).pop(),
+                                                ),
+                                                ElevatedButton(
+                                                  child: const Icon(Icons.check_circle),
+                                                  onPressed: () => goOpen(getDataReportProgress[index]['id']),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: const Text('To Open', style: const TextStyle( fontSize: 11, fontWeight: FontWeight.w800,  ),),
+                                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red) ),
+                                    ),
+                                    // const SizedBox(height: 20),
+                                    Spacer(),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        
+                                      },
+                                      child: const Text('Other Assigned' , style: const TextStyle( fontSize: 11, fontWeight: FontWeight.w800,  ),),
+                                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 192, 173, 0),),  ),
+                                    ),
+                                    // const SizedBox(height: 20),
+                                    Spacer(),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            //show dialog to confirm delete data
+                                            return 
+                                            AlertDialog(
+                                              content: const Text('Report Selesai?'),
+                                              actions: <Widget>[
+                                                ElevatedButton(
+                                                  child: const Icon(Icons.cancel),
+                                                  onPressed: () => Navigator.of(context).pop(),
+                                                ),
+                                                ElevatedButton(
+                                                  child: const Icon(Icons.check_circle),
+                                                  onPressed: () => goDone(getDataReportProgress[index]['id']),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: const Text('Done' , style: const TextStyle( fontSize: 11, fontWeight: FontWeight.w800,  ),),
+                                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.green,) ),
+                                    ),
+                                    // const SizedBox(height: 10),
+                                  ],
+                                )
+                              ],
                             ),
-                            const SizedBox(height: 1),
-                          ],
-                        ),
+                            
                       ),
                     );
             },

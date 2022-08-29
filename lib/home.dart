@@ -129,7 +129,7 @@ class _HomeState extends State<Home> {
 
   tanggalSekarang(){
     var now = DateTime.now();
-    var formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
+    var formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
     String formattedDate = formatter.format(now);
     return formattedDate;
   }
