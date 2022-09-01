@@ -14,6 +14,7 @@ String username = '';
 String nama = '';
 String viewAll = '';
 String nik = '';
+var _idUser;
 
 class Progress extends StatefulWidget {
   const Progress({Key? key}) : super(key: key);
@@ -26,6 +27,8 @@ class Progress extends StatefulWidget {
 class _ProgressState extends State<Progress> {
 
   List getDataReportProgress = [];
+  
+  List<dynamic> dataUser = [];
   // String 
 
    @override
@@ -34,6 +37,7 @@ class _ProgressState extends State<Progress> {
     setState(() {
       _getData();
       getReportProgress();
+      getUser();
     });
     
   }
@@ -53,13 +57,6 @@ class _ProgressState extends State<Progress> {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     await localStorage.clear();
     runApp(const MaterialApp(home: LoginApp()));
-    // Navigator.pushAndRemoveUntil(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (BuildContext context) => const LoginApp(),
-    //   ),
-    //   (route) => false,
-    // );  
   }
 
   void reportDone() async{
@@ -103,7 +100,7 @@ class _ProgressState extends State<Progress> {
    
     try {
       final response = await http.get(Uri.parse(
-        "http://10.10.40.40/report-cell-api/index.php/reportProgress/index_get?id=1708008681&view=y"
+        "http://10.10.40.40/report-cell-api/index.php/reportProgress/index_get?id=$nik&view=$viewAll"
       ));
 
       if(response.statusCode == 200){
@@ -111,14 +108,14 @@ class _ProgressState extends State<Progress> {
 
         setState(() {
           getDataReportProgress = data;
-          print(getDataReportProgress.length);
+          print(getDataReportProgress);
         });
       }
 
     } catch (e) {
       print(e);
     }
-    // print(username);
+    // print('http://10.10.40.40/report-cell-api/index.php/reportProgress/index_get?id=$nik&view=$viewAll');
   }
 
   Future goOpen(context) async {
@@ -126,6 +123,7 @@ class _ProgressState extends State<Progress> {
             var updateData =  await http.put(
               Uri.parse("http://10.10.40.40/report-cell-api/index.php/reportProgress/index_put"),
               body: {
+                // "jenis"       : 'goOpen',
                 "id"          : context,
                 'updated_at'  : tanggalSekarang()
               },
@@ -137,6 +135,7 @@ class _ProgressState extends State<Progress> {
                 var insertDataLog =  await http.post(
                   Uri.parse("http://10.10.40.40/report-cell-api/index.php/reportProgress/index_post"),
                   body: {
+                    "jenis"             : 'goOpen',
                     "id"                : context,
                     "nik"               : nik,
                     "status"            : 'OPEN',
@@ -196,7 +195,117 @@ class _ProgressState extends State<Progress> {
           print(e);
         }
       }
+      
+  void showDialogWithFields(String id) {
+      showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    content: Stack(
+                      // overflow: Overflow.visible,
+                      children: <Widget>[
+                        Positioned(
+                          right: -40.0,
+                          top: -40.0,
+                          child: InkResponse(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const CircleAvatar(
+                              child: Icon(Icons.close),
+                              backgroundColor: Colors.red,
+                            ),
+                          ),
+                        ),
+                        Form(
+                          // key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                                DropdownButtonFormField (
+                                  hint: Text("Pilih"),
+                                  value: _idUser,
+                                  items: dataUser.map((item) {
+                                    return DropdownMenuItem(
+                                      child: Text(item['NAMA']),
+                                      value: item['NIK'],
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                  setState(() {
+                                    _idUser = value;
+                                    print(_idUser);
+                                  });
+                                  },
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Simpan",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () {
+                                    pindahOrang(id, _idUser );
+                                    // print(id);
+                                    // print(_idUser);
+                                  },
+                                ),
+                                // )
+                              ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                });
+    }
 
+
+    Future pindahOrang(String id, String idOrang) async {
+        try {
+                var insertDataLog =  await http.post(
+                  Uri.parse("http://10.10.40.40/report-cell-api/index.php/reportProgress/index_post"),
+                  body: {
+                    "jenis"             : 'pindahOrang',
+                    "id"                : id,
+                    "nik"               : idOrang,
+                    "status"            : 'PROGRESS',
+                    "masalahSebenarnya" : '',
+                    "created_at"        : tanggalSekarang()
+                  },
+                ).then((value) {
+                    var data = jsonDecode(value.body);
+                    return data['error'];
+                });
+                if(insertDataLog == false){
+                  return reportProgress();
+                }else{
+                  return Navigator.of(context).pop();
+                }
+        } catch (e) {
+          print(e);
+        }
+        // print(id);
+      }
+
+
+// Future getUser(context) async {
+    
+    void getUser() async {
+      final respose = await http.get(Uri.parse(
+        "http://10.10.40.40/report-cell-api/index.php/user/index_get"
+      ));
+      var listData = jsonDecode(respose.body); //lalu kita decode hasil datanya 
+      setState(() {
+        dataUser = listData; // dan kita set kedalam variable _dataProvince
+      });
+      print("data : $listData");
+    }
+// }
   
 
   @override
@@ -301,7 +410,7 @@ class _ProgressState extends State<Progress> {
                                     Spacer(),
                                     ElevatedButton(
                                       onPressed: () {
-                                        
+                                        showDialogWithFields(getDataReportProgress[index]['id']);
                                       },
                                       child: const Text('Other Assigned' , style: const TextStyle( fontSize: 11, fontWeight: FontWeight.w800,  ),),
                                       style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 192, 173, 0),),  ),
